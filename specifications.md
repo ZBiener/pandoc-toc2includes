@@ -1,5 +1,6 @@
 
 # Basic comparison:
+
 + Read outline in markdown format
 + Read files and folder directories and subdirectories
 + Compare the directory structure with the outline
@@ -9,7 +10,7 @@
 
 # Outline view:
 
-## Compilation Settings
+## Compilation Settings$$  $$
 
 - [ ] [Overview](#overview)
 - [x] [Method and Goals](#method-and-goals)

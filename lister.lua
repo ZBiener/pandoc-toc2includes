@@ -1,29 +1,40 @@
-function lines(str)
-    local t = {}
-    local function helper(line)
-       table.insert(t, line)
-       return ""
-    end
-    helper((str:gsub("(.-)\r?\n", helper)))
-    return t
- end
+--unction lines(str)
+--   local t = {}
+--   local function helper(line)
+--      table.insert(t, line)
+--      return ""
+--   end
+--   helper((str:gsub("(.-)\r?\n", helper)))
+--   return t
+--end
+--
+--ocal function getfilelist()
+--   -- would absolute paths be needed?
+--   -- local fname = pandoc.system.get_working_directory()
+--   local pfile = pandoc.pipe("find", { ".", "-name", "*.md"}, "-print")
+--   return pfile
+--nd
 
-local function getfilelist()
-    -- would absolute paths be needed?
-    -- local fname = pandoc.system.get_working_directory()
-    local pfile = pandoc.pipe("find", { ".", "-name", "*.md"}, "-print")
-    return pfile
-end
-
-function Pandoc(doc)
-    local hblocks = {}
-    for i,el in pairs(doc.blocks) do
-        if (el.t == "BulletList") then
-           --table.insert(hblocks, [Header 1 ('document-tree',[],[]) [Str 'Document',Space,Str 'Tree']])
-           return el
-        end
+BulletedList = function (element)
+    for i, item in ipairs(element.content) do
+      local first = item[1]
+      if first and first.t == 'Plain' then
+        element.content[i][1] = pandoc.Para{pandoc.Strong(first.content)}
+      end
     end
-end
+    return element
+  end
+
+--function Pandoc(doc)
+--    local hblocks = {}
+--    for i,el in pairs(doc.blocks) do
+--        if (el.t == "BulletList") then
+--            for i, item in ipairs(el.content) do
+--                print (el.content[i].t)
+--            end
+--        end
+--    end
+--end
 
 --function Blocks(block)
 --    -- Go from end to start to avoid problems with shifting indices.

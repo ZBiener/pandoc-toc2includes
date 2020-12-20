@@ -6,8 +6,8 @@ import panflute as pf
 
 
 def action(elem, doc):
-    if isinstance(elem, pf.OrderedList):
-        return pf.BulletList(*elem.content)
+    if isinstance(elem, pf.BulletList)
+        return pf.OrderedList(*elem.content)
 
 
 def main(doc=None):

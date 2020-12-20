@@ -10,12 +10,12 @@
 
 # Outline view:
 
-## Compilation Settings$$  $$
+## Compilation Settings
 
 - [ ] [Overview](#overview)
 - [x] [Method and Goals](#method-and-goals)
 - [ ] [Assignments](#assignments)
-  - [ ] [Reading Outline and Presentation](#reading-outline-and-presentation)
+  - [ ] [Reading Outline and Presentation](#reading-outline-and-presentation) sdf asd 
   - [x] [Meeting Scribe](#meeting-scribe)
   - [ ] [Weekly Reading Responses](#weekly-reading-responses)
   - [ ] [Meeting Observer](#meeting-observer)

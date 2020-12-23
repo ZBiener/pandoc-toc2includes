@@ -15,26 +15,28 @@
 --   return pfile
 --nd
 
-BulletedList = function (element)
-    for i, item in ipairs(element.content) do
-      local first = item[1]
-      if first and first.t == 'Plain' then
-        element.content[i][1] = pandoc.Para{pandoc.Strong(first.content)}
-      end
-    end
-    return element
-  end
-
---function Pandoc(doc)
---    local hblocks = {}
---    for i,el in pairs(doc.blocks) do
---        if (el.t == "BulletList") then
---            for i, item in ipairs(el.content) do
---                print (el.content[i].t)
---            end
---        end
+--BulletedList = function (element)
+--    for i, item in ipairs(element.content) do
+--      local first = item[1]
+--      if first and first.t == 'Plain' then
+--        element.content[i][1] = pandoc.Para{pandoc.Strong(first.content)}
+--      end
 --    end
---end
+--    return element
+--  end
+
+function Pandoc(doc)
+    local hblocks = {}
+    for i,el in pairs(doc.blocks) do
+        if (el.t == "BulletList") then
+            for i, item in ipairs(el.content) do
+              for i, block in pairs(el.content) do
+                return block
+              end
+            end
+        end
+    end
+end
 
 --function Blocks(block)
 --    -- Go from end to start to avoid problems with shifting indices.

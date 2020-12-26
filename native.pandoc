@@ -1,5 +1,0 @@
-[BulletList
- [[Plain [Str "testdir"]
-  ,BulletList
-   [[Plain [Strong [Str "file1.md"]]]
-   ,[Plain [Str "file2.md"]]]]]]

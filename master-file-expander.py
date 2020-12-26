@@ -40,7 +40,7 @@ def find_md_files_in_directory_tree(base_directory):
   
 def normalized_path(path):
     if os.path.isabs(path):
-        return os.path.normpath(path)
+        return Path(os.path.normpath(path))
     else: 
         return Path(os.path.normpath(os.path.join(base_directory, path)))
 
@@ -51,23 +51,20 @@ def match_filename_pattern(line):
 
 def format_include_statement(line):
         match = match_filename_pattern(line)
-        if match and match.group('plusminus') == '+':
+        if match and match.group('plusminus') == '+' and os.path.exists(normalized_path(match.group('filename'))):
             include_statement = f'{{include="{normalized_path(match.group("filename"))}"}}\n\n'
             return include_statement
-        elif match and match.group('plusminus') == '-':
+        elif match and match.group('plusminus') == '-' and os.path.exists(normalized_path(match.group('filename'))):
             return ''
+        elif match and not os.path.exists(normalized_path(match.group('filename'))):
+            return "Problem finding file: " + line
         else:
             return line
 
 def find_toc_files(line):
     match = match_filename_pattern(line)
     if match:
-        return normalized_path(match.group('filename'))
-    
-def process_file_includes(input_toc_section):
-    toc_files = [find_toc_files(line) for line in input_toc_section]
-    toc_section_with_includes = [format_include_statement(line) for line in input_toc_section]
-    return toc_files, toc_section_with_includes  
+        return normalized_path(match.group('filename')) 
 
 def process_headings(line):
     line = re.sub("\s{6}\+(.*)", r"####\1\n", line)
@@ -80,16 +77,25 @@ def array_difference(available_md_files, toc_files):
     available_files_not_in_toc = [x for x in available_md_files  if x not in set(toc_files)]
     return available_files_not_in_toc
 
+def validate_input_toc(line):
+    match = match_filename_pattern(line)
+    if match and not os.path.exists(normalized_path(match.group('filename'))):
+        return "Problem finding file :" + line
+    else:
+        return line 
+
+
 def process_input_file(input_file):
     input_toc_section = separate_pandoc_section(input_file)
     toc_files = [find_toc_files(line) for line in input_toc_section]
-    toc_files.append(input_file)
     toc_section_with_includes = [format_include_statement(line) for line in input_toc_section]
     toc_section_with_includes_and_headings = [process_headings(line) for line in toc_section_with_includes]
+    input_toc_section = [validate_input_toc(line) for line in input_toc_section]
     return (input_toc_section, toc_files, toc_section_with_includes_and_headings)
 
 
 def find_remaining_files(toc_files):
+    toc_files.append(normalized_path(input_file))
     available_md_files = find_md_files_in_directory_tree(base_directory)
     remaining_files_not_in_toc = array_difference(available_md_files, toc_files)
     remaining_files_not_in_toc = [Path(os.path.relpath(filename, base_directory)) for filename in remaining_files_not_in_toc]
@@ -100,7 +106,7 @@ def output_to_pandoc(new_toc_section):
     print(pandoc_output)
 
 def output_to_file(input_file, input_toc_section, remaining_files):
-    file_output = ''.join(input_toc_section) + '::: {OTHER AVAILABLE FILES} :::\n\n' + ''.join('\t-{}\n'.format(k) for k in remaining_files)
+    file_output = ''.join(input_toc_section) + '::: {OTHER AVAILABLE FILES} :::\n\n' + ''.join('\t\t\t+ {}\n'.format(k) for k in remaining_files)
     with open(input_file, 'w') as f:
        f.write(file_output)
 

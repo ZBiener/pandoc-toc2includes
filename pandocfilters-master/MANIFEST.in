@@ -1,5 +1,0 @@
-recursive-include examples *.py
-recursive-include examples *.md
-include examples/Makefile
-include README.rst
-include LICENSE

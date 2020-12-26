@@ -11,7 +11,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["Draft/main.md"],
+            "args": ["Example/main.md"],
         }
     ]
 }

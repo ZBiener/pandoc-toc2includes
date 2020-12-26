@@ -6,29 +6,17 @@ date: Dec 2020
 ::: {TABLE OF CONTENTS} :::
 
 + Introduction
-  in: ../somefolder/somefile
-  + Header
-    in: ../somefolder/somefile
-    out: This is a title
-  + file2.md
-    - This is a title
+          + testdir/file1.md  
+  + subsrction
+          - testdir/file2.md
+          + testdir/Introduction/file3.md
+          + another.md
 
 
-- First section
-    - file2.md
-    - This is a title
-  - 1.2
-- 2
-  - 2.1
-    - Draft/main.md 
-    - file2
-  - 2.2
-    - 2.2.1
-    - 2.2.2
-  - 2.3
-- 3
-- 4
-- 5
-  - 5.1
 
-::::::::::::::::::::::::
+::: {OTHER AVAILABLE FILES} :::
+
+	-/Users/zvb1/Programming/markdown_fileStructure_outliner/Draft/specifications.md
+	-/Users/zvb1/Programming/markdown_fileStructure_outliner/Draft/main.md
+	-/Users/zvb1/Programming/markdown_fileStructure_outliner/Draft/README.md
+	-/Users/zvb1/Programming/markdown_fileStructure_outliner/Draft/testdir/Introduction/file4.md

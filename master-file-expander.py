@@ -26,11 +26,11 @@ def process_command_arguments():
     base_directory = args.base_directory
     input_file = os.path.abspath(args.filename)
 
-def separate_pandoc_section(input_file):
+def load_file(input_file):
     with open(input_file, 'r') as f:
         input_file_content = f.readlines()
-    p = re.compile('other available files', re.IGNORECASE)
-    split_position = [index for index,line in enumerate(input_file_content) if p.search(line)]
+    pattern = re.compile('other available files', re.IGNORECASE)
+    split_position = [index for index,line in enumerate(input_file_content) if pattern.search(line)]
     input_toc_section = input_file_content[:split_position[0]]
     return(input_toc_section)
 
@@ -38,7 +38,7 @@ def find_md_files_in_directory_tree(base_directory):
     available_markdown_files = list(Path(base_directory).rglob('*.md'))
     return available_markdown_files
   
-def normalized_path(path):
+def normalize_path(path):
     if os.path.isabs(path):
         return Path(os.path.normpath(path))
     else: 
@@ -50,21 +50,23 @@ def match_filename_pattern(line):
     return pattern.search(line)
 
 def format_include_statement(line):
-        match = match_filename_pattern(line)
-        if match and match.group('plusminus') == '+' and os.path.exists(normalized_path(match.group('filename'))):
-            include_statement = f'{{include="{normalized_path(match.group("filename"))}"}}\n\n'
+    match = match_filename_pattern(line)
+    if match:
+        filepath = normalize_path(match.group('filename'))
+        if match.group('plusminus') == '+' and os.path.exists(filepath): 
+            include_statement = f'{{include="{filepath}"}}\n\n'
             return include_statement
-        elif match and match.group('plusminus') == '-' and os.path.exists(normalized_path(match.group('filename'))):
+        elif match.group('plusminus') == '-' and os.path.exists(filepath): 
             return ''
-        elif match and not os.path.exists(normalized_path(match.group('filename'))):
+        elif not os.path.exists(filepath):
             return "Problem finding file: " + line
-        else:
-            return line
+    else:
+        return line
 
 def find_toc_files(line):
     match = match_filename_pattern(line)
     if match:
-        return normalized_path(match.group('filename')) 
+        return normalize_path(match.group('filename')) 
 
 def process_headings(line):
     line = re.sub("\s{6}\+(.*)", r"####\1\n", line)
@@ -79,23 +81,23 @@ def array_difference(available_md_files, toc_files):
 
 def validate_input_toc(line):
     match = match_filename_pattern(line)
-    if match and not os.path.exists(normalized_path(match.group('filename'))):
+    if match and not os.path.exists(normalize_path(match.group('filename'))):
         return "Problem finding file :" + line
     else:
         return line 
 
 
 def process_input_file(input_file):
-    input_toc_section = separate_pandoc_section(input_file)
+    input_toc_section = load_file(input_file)
     toc_files = [find_toc_files(line) for line in input_toc_section]
-    toc_section_with_includes = [format_include_statement(line) for line in input_toc_section]
-    toc_section_with_includes_and_headings = [process_headings(line) for line in toc_section_with_includes]
+    toc_section = [format_include_statement(line) for line in input_toc_section]
+    toc_section = [process_headings(line) for line in toc_section]
     input_toc_section = [validate_input_toc(line) for line in input_toc_section]
-    return (input_toc_section, toc_files, toc_section_with_includes_and_headings)
+    return (input_toc_section, toc_files, toc_section)
 
 
 def find_remaining_files(toc_files):
-    toc_files.append(normalized_path(input_file))
+    toc_files.append(normalize_path(input_file))
     available_md_files = find_md_files_in_directory_tree(base_directory)
     remaining_files_not_in_toc = array_difference(available_md_files, toc_files)
     remaining_files_not_in_toc = [Path(os.path.relpath(filename, base_directory)) for filename in remaining_files_not_in_toc]

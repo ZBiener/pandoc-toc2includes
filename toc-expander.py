@@ -7,7 +7,7 @@ import argparse
 import re
 from pathlib import Path
 
-global base_directory, input_file
+global base_directory, input_filename
 
 def process_command_arguments():
     # Initiate the parser with a description
@@ -22,12 +22,12 @@ def process_command_arguments():
     # TODO: add command switch to allow the path to be determined by cwd: os.getcwd()
     if args.base_directory is None:
         args.base_directory = os.path.dirname(os.path.abspath(args.filename))
-    global base_directory, input_file
+    global base_directory, input_filename
     base_directory = args.base_directory
-    input_file = os.path.abspath(args.filename)
+    input_filename = os.path.abspath(args.filename)
 
-def load_file(input_file):
-    with open(input_file, 'r') as f:
+def load_file(input_filename):
+    with open(input_filename, 'r') as f:
         input_file_content = f.readlines()
     pattern = re.compile('other available files', re.IGNORECASE)
     split_position = [index for index,line in enumerate(input_file_content) if pattern.search(line)]
@@ -73,8 +73,8 @@ def match_and_replace_headings(line):
     line = re.sub("\s{0}\+(.*)", r"#\1\n", line)
     return line 
 
-def process_input_file(input_file):
-    markdown_input = load_file(input_file)
+def process_input_file(input_filename):
+    markdown_input = load_file(input_filename)
     # List comprehension madness. 
     # For each line, match_and_replace returns a 3-place tuple, the * unpacks the tuple, and zip returns it.
     list_of_files_included_in_TOC, markdown_output, pandoc_output = zip(*(match_and_replace(line) for line in markdown_input ))
@@ -90,17 +90,17 @@ def find_files_that_are_not_included_in_the_toc(list_of_files_included_in_TOC):
 def output_to_pandoc(pandoc_output):
     print(''.join(pandoc_output))
 
-def output_to_file(input_file, markdown_output, list_of_files_in_directory_tree_but_not_TOC):
+def output_to_file(input_filename, markdown_output, list_of_files_in_directory_tree_but_not_TOC):
     file_output = ''.join(markdown_output) + '::: {OTHER AVAILABLE FILES} :::\n\n' + ''.join('\t\t\t+ {}\n'.format(k) for k in list_of_files_in_directory_tree_but_not_TOC)
-    with open(input_file, 'w') as f:
+    with open(input_filename, 'w') as f:
        f.write(file_output)
 
 def main():
     process_command_arguments()
-    list_of_files_included_in_TOC, markdown_output, pandoc_output = process_input_file(input_file)
+    list_of_files_included_in_TOC, markdown_output, pandoc_output = process_input_file(input_filename)
     relative_paths_of_files_in_directory_tree_but_not_TOC = find_files_that_are_not_included_in_the_toc(list_of_files_included_in_TOC)
     output_to_pandoc(pandoc_output)
-    output_to_file(input_file, markdown_output, relative_paths_of_files_in_directory_tree_but_not_TOC)
+    output_to_file(input_filename, markdown_output, relative_paths_of_files_in_directory_tree_but_not_TOC)
 
 
 if __name__ == "__main__":

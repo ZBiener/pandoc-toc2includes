@@ -31,8 +31,8 @@ def load_file(input_file):
         input_file_content = f.readlines()
     pattern = re.compile('other available files', re.IGNORECASE)
     split_position = [index for index,line in enumerate(input_file_content) if pattern.search(line)]
-    markdown_output = input_file_content[:split_position[0]]
-    return(markdown_output)
+    markdown_input = input_file_content[:split_position[0]]
+    return(markdown_input)
 
 def find_md_files_in_directory_tree(base_directory):
     available_markdown_files = list(Path(base_directory).rglob('*.md'))
@@ -74,10 +74,10 @@ def match_and_replace_headings(line):
     return line 
 
 def process_input_file(input_file):
-    markdown_output = load_file(input_file)
+    markdown_input = load_file(input_file)
     # List comprehension madness. 
     # For each line, match_and_replace returns a 3-place tuple, the * unpacks the tuple, and zip returns it.
-    list_of_files_included_in_TOC, markdown_output, pandoc_output = zip(*(match_and_replace(line) for line in markdown_output   ))
+    list_of_files_included_in_TOC, markdown_output, pandoc_output = zip(*(match_and_replace(line) for line in markdown_input ))
     return (list_of_files_included_in_TOC, markdown_output, pandoc_output)
 
 

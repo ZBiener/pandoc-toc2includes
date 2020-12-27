@@ -15,4 +15,5 @@ date: Dec 2020
 
 ::: {OTHER AVAILABLE FILES} :::
 
+			+ main.md
 			+ Section Two/example subsection.md

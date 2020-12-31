@@ -1,0 +1,3 @@
+[submodule "pandoc-share"]
+	path = pandoc-share
+	url = https://github.com/ZBiener/pandoc-share
